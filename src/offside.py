@@ -32,28 +32,28 @@ def get_four_points(im) :
 
 if __name__ == '__main__' :
 
-    # Read source image.
-    im_src = cv2.imread('../examples/images/first-image.jpg')
-    size = im_src.shape
+
+    # Read destination image
+    # 2008 UEFA Cup Final (Zenit Saint Petersburg vs Rangers) - Manchester City Stadium
+    # Origin: Top Right. Field Size: 105m by 68m
+    im_dst = cv2.imread('../img/football2.jpg')
 
     # Blank image.
-    #im_src = np.zeros(shape=[500, 10, 3], dtype=np.uint8)
-    #size = im_src.shape
-    #cv2.imshow("Black Blank", im_src)
+    im_src = np.zeros(shape=[68, 105, 3], dtype=np.uint8)
+    im_src[:] = (0, 0, 255)
+    size = im_src.shape
+    cv2.imshow("Real Life", im_src)
    
     # Create a vector of source points.
+    # Real-life Manchester City Stadium - Right Penalty Area Points
     pts_src = np.array(
-                       [
-                        [0,0],
-                        [size[1] - 1, 0],
-                        [size[1] - 1, size[0] -1],
-                        [0, size[0] - 1 ]
-                        ],dtype=float
-                       )
-
-    
-    # Read destination image
-    im_dst = cv2.imread('../img/football2.jpg')
+        [
+            [16.5, 13.84],      # Top Left
+            [0,    13.84],      # Top Right
+            [0,    54.16],      # Bottom Right
+            [16.5, 54.16 ]      # Bottom Left
+        ],dtype=float
+    )
 
     # Get four corners of the billboard
     print('Click on four corners of a billboard and then press ENTER')
@@ -66,10 +66,12 @@ if __name__ == '__main__' :
     im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]))
 
     # Black out polygonal area in destination image.
-    cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
+    cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 1)
     
     # Add warped source image to destination image.
     im_dst = im_dst + im_temp
+
+    cv2.imshow("Warped Image", im_temp)
     
     # Display image.
     cv2.imshow("Image", im_dst)
