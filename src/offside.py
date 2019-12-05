@@ -33,7 +33,7 @@ def get_four_points(im) :
 if __name__ == '__main__' :
 
     # Read source image.
-    im_src = cv2.imread('../Homography/images/first-image.jpg')
+    im_src = cv2.imread('../examples/images/first-image.jpg')
     size = im_src.shape
 
     # Blank image.
