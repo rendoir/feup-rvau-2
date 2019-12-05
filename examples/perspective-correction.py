@@ -26,10 +26,10 @@ if __name__ == '__main__' :
                        )
     
     
-    print '''
+    print('''
         Click on the four corners of the book -- top left first and
         bottom left last -- and then hit ENTER
-        '''
+        ''')
     
     # Show image and wait for 4 clicks.
     cv2.imshow("Image", im_src)
