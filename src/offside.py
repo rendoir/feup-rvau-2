@@ -58,25 +58,34 @@ if __name__ == '__main__' :
     # Calculate Homography between source and destination points
     h, status = cv2.findHomography(pts_src, pts_dst)
     h_inv = np.linalg.inv(h)
-    print(h)
+    #print(h)
 
-    # Get offside player point
+    # Get offside player point (field image)
     print('Click on the offside player and then press [ENTER]')
-    player_pts = get_points(im_dst, 1)
+    player_im = get_points(im_dst, 1)
+    #print(player_im)
 
-    # Line Points in the Real World 
-    line_src = np.float32([87.5, 12.84, 90, 12.84, 90, 53.16, 87.5, 53.16]).reshape(4, 1, -1)
+    # Get corresponding offside player point in real world
+    player_rw = cv2.perspectiveTransform(player_im[0].reshape(1, 1, -1), h_inv)
+    #print(player_rw)
+
+    # Get the two line points in the real world line (same x, y is the field bounds)
+    line_point_1_rw = player_rw.copy()
+    line_point_1_rw[0][0][1] = 0
+    line_point_2_rw = player_rw.copy()
+    line_point_2_rw[0][0][1] = 67
+    #print(line_point_1_rw)
+    #print(line_point_2_rw)
+
+    # Get corresponding second point in the image
+    line_point_1_im = cv2.perspectiveTransform(line_point_1_rw.reshape(1, 1, -1), h)
+    line_point_2_im = cv2.perspectiveTransform(line_point_2_rw.reshape(1, 1, -1), h)
+    #print(line_point_1_im)
+    #print(line_point_2_im)
     
-    # Apply perspective tranform to the line points
-    line_dst = cv2.perspectiveTransform(line_src, h)
-    print(line_dst)
-
-    # Black out polygonal area in destination image.
-    cv2.fillConvexPoly(im_dst, line_dst.astype(int), 0, 16)
+    # Draw line
+    cv2.line(im_dst, tuple(line_point_1_im[0][0].astype(int)), tuple(line_point_2_im[0][0].astype(int)), (0,0,255), 5, cv2.LINE_AA)
 
     # Display image.
     cv2.imshow("Image", im_dst)
     cv2.waitKey(0)
-
-
-
