@@ -84,7 +84,9 @@ if __name__ == '__main__' :
     #print(line_point_2_im)
     
     # Draw line
-    cv2.line(im_dst, tuple(line_point_1_im[0][0].astype(int)), tuple(line_point_2_im[0][0].astype(int)), (0,0,255), 5, cv2.LINE_AA)
+    overlay_img = im_dst.copy()
+    cv2.line(overlay_img, tuple(line_point_1_im[0][0].astype(int)), tuple(line_point_2_im[0][0].astype(int)), (0,0,255), 5, cv2.LINE_AA)
+    cv2.addWeighted(overlay_img, 0.5, im_dst, 0.5, 0, im_dst)
 
     # Display image.
     cv2.imshow("Image", im_dst)
