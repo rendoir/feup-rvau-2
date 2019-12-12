@@ -5,24 +5,6 @@ import numpy as np
 import sys
 import utils
 
-def blend_overlay_with_field(src_img,overlay,transparency):
-    hsv = cv2.cvtColor(src_img, code=cv2.COLOR_BGR2HSV)
-    # green range
-    lower_green = np.array([30, 65, 65])
-    upper_green = np.array([65, 255, 255])
-    # layer masks
-    field_mask = cv2.inRange(hsv, lower_green, upper_green)
-    player_mask = cv2.bitwise_not(field_mask)
-    # player_mask = cv2.morphologyEx(player_mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
-    # extract layers from original image
-    field_layer = cv2.bitwise_and(src_img, src_img, mask=field_mask)
-    player_layer = cv2.bitwise_and(src_img, src_img, mask=player_mask)
-    # creates line that is blank where the players are
-    overlay_layer = cv2.bitwise_and(field_layer,overlay)
-    overlay_layer = cv2.GaussianBlur(overlay_layer,(3,3),cv2.BORDER_DEFAULT)
-    field_layer = cv2.addWeighted(field_layer,1,overlay_layer,transparency,0)
-    final = field_layer + player_layer
-    return final
 
 
 if __name__ == '__main__' :
@@ -32,7 +14,7 @@ if __name__ == '__main__' :
     # 2008 UEFA Cup Final (Zenit Saint Petersburg vs Rangers) - Manchester City Stadium
     # Origin: Top Right. Field Size: 105m by 68m
     im_dst = cv2.imread('../img/football1.jpg')
-    clean_img = cv2.imread('../img/football1.jpg')
+    clean_img = im_dst.copy()
    
     # Create a vector of source points.
     # Real-life Manchester City Stadium - Right Penalty Area Points
@@ -84,7 +66,7 @@ if __name__ == '__main__' :
     overlay_img = blank_image
     cv2.line(overlay_img, tuple(line_point_1_im.astype(int)), tuple(line_point_2_im.astype(int)), (0,0,255), 5, cv2.LINE_AA)
 
-    final = blend_overlay_with_field(clean_img,overlay_img,1.0)
+    final = utils.blend_overlay_with_field(clean_img,overlay_img,1.0)
 
     # Display image.
     cv2.imshow("Image", final)
