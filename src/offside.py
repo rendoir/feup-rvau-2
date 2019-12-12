@@ -3,33 +3,7 @@
 import cv2
 import numpy as np
 import sys
-
-def mouse_handler(event, x, y, flags, data) :
-
-    if event == cv2.EVENT_LBUTTONDOWN :
-        if len(data['points']) < data['max_points'] :
-            cv2.circle(data['im'], (x,y), 3, (0,0,255), 5, 16)
-            cv2.imshow("Image", data['im'])
-            data['points'].append([x,y])
-
-def get_points(im, max_points) :
-
-    # Set up data to send to mouse handler
-    data = {}
-    data['im'] = im.copy()
-    data['points'] = []
-    data['max_points'] = max_points
-    
-    #Set the callback function for any mouse event
-    cv2.imshow("Image",im)
-    cv2.setMouseCallback("Image", mouse_handler, data)
-    cv2.waitKey(0)
-    cv2.setMouseCallback("Image", lambda *args : None)
-    
-    # Convert array to np.array
-    points = np.vstack(data['points']).astype(float)
-    
-    return points
+import utils
 
 def blend_overlay_with_field(src_img,overlay,transparency):
     hsv = cv2.cvtColor(src_img, code=cv2.COLOR_BGR2HSV)
@@ -57,8 +31,8 @@ if __name__ == '__main__' :
     # Read destination image
     # 2008 UEFA Cup Final (Zenit Saint Petersburg vs Rangers) - Manchester City Stadium
     # Origin: Top Right. Field Size: 105m by 68m
-    im_dst = cv2.imread('../img/football2.jpg')
-    clean_img = cv2.imread('../img/football2.jpg')
+    im_dst = cv2.imread('../img/football1.jpg')
+    clean_img = cv2.imread('../img/football1.jpg')
    
     # Create a vector of source points.
     # Real-life Manchester City Stadium - Right Penalty Area Points
@@ -73,7 +47,7 @@ if __name__ == '__main__' :
 
     # Get four corners of the penalty area
     print('Click on the four corners of the penalty area and then press [ENTER]')
-    pts_dst = get_points(im_dst, 4)
+    pts_dst = utils.get_points(im_dst, 4)
     #print(pts_dst)
     
     # Calculate Homography between source and destination points
@@ -83,7 +57,7 @@ if __name__ == '__main__' :
 
     # Get offside player point (field image)
     print('Click on the offside player and then press [ENTER]')
-    player_im = get_points(im_dst, 1)[0]
+    player_im = utils.get_points(im_dst, 1)[0]
     #print(player_im)
 
     # Get corresponding offside player point in real world

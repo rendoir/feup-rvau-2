@@ -3,7 +3,7 @@ import numpy as np
 import sys
 
 if __name__ == '__main__':
-    img = cv2.imread("../../img/football2.jpg", 1)
+    img = cv2.imread("../../img/football1.jpg", 1)
     cv2.imshow("Original", img)
 
     # convert the image to hsv for the layer masks
