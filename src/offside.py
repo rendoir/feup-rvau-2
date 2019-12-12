@@ -54,6 +54,7 @@ if __name__ == '__main__' :
     # Get four corners of the penalty area
     print('Click on the four corners of the penalty area and then press [ENTER]')
     pts_dst = get_points(im_dst, 4)
+    #print(pts_dst)
     
     # Calculate Homography between source and destination points
     h, status = cv2.findHomography(pts_src, pts_dst)
@@ -62,30 +63,30 @@ if __name__ == '__main__' :
 
     # Get offside player point (field image)
     print('Click on the offside player and then press [ENTER]')
-    player_im = get_points(im_dst, 1)
+    player_im = get_points(im_dst, 1)[0]
     #print(player_im)
 
     # Get corresponding offside player point in real world
-    player_rw = cv2.perspectiveTransform(player_im[0].reshape(1, 1, -1), h_inv)
+    player_rw = cv2.perspectiveTransform(player_im.reshape(1, 1, -1), h_inv)[0][0]
     #print(player_rw)
 
     # Get the two line points in the real world line (same x, y is the field bounds)
     line_point_1_rw = player_rw.copy()
-    line_point_1_rw[0][0][1] = 0
+    line_point_1_rw[1] = 0
     line_point_2_rw = player_rw.copy()
-    line_point_2_rw[0][0][1] = 67
+    line_point_2_rw[1] = 67
     #print(line_point_1_rw)
     #print(line_point_2_rw)
 
     # Get corresponding second point in the image
-    line_point_1_im = cv2.perspectiveTransform(line_point_1_rw.reshape(1, 1, -1), h)
-    line_point_2_im = cv2.perspectiveTransform(line_point_2_rw.reshape(1, 1, -1), h)
+    line_point_1_im = cv2.perspectiveTransform(line_point_1_rw.reshape(1, 1, -1), h)[0][0]
+    line_point_2_im = cv2.perspectiveTransform(line_point_2_rw.reshape(1, 1, -1), h)[0][0]
     #print(line_point_1_im)
     #print(line_point_2_im)
     
     # Draw line
     overlay_img = im_dst.copy()
-    cv2.line(overlay_img, tuple(line_point_1_im[0][0].astype(int)), tuple(line_point_2_im[0][0].astype(int)), (0,0,255), 5, cv2.LINE_AA)
+    cv2.line(overlay_img, tuple(line_point_1_im.astype(int)), tuple(line_point_2_im.astype(int)), (0,0,255), 5, cv2.LINE_AA)
     cv2.addWeighted(overlay_img, 0.5, im_dst, 0.5, 0, im_dst)
 
     # Display image.
