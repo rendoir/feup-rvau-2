@@ -46,11 +46,11 @@ if __name__ == '__main__' :
     
     # Draw circle
     overlay_rw = np.zeros((68, 105, 3), np.uint8)
-    cv2.circle(overlay_rw, tuple(ball_rw.astype(int)), int(9.15), (0,0,255), cv2.FILLED)
+    cv2.circle(overlay_rw, tuple(ball_rw.astype(int)), int(9.15), (0,0,255), 1, lineType=cv2.LINE_AA)
     cv2.imshow("Overlay Real-world", overlay_rw)
     overlay_img = cv2.warpPerspective(overlay_rw, h, (im_dst.shape[1],im_dst.shape[0]))
     cv2.imshow("Overlay Warped", overlay_img)
-    #cv2.add(overlay_img, im_dst, im_dst)
+    cv2.add(overlay_img, im_dst, im_dst)
 
     # Display image.
     cv2.imshow("Image", im_dst)
