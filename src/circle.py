@@ -8,6 +8,7 @@ import utils
 
 if __name__ == '__main__' :
 
+    quality = 100
 
     # Read destination image
     # 2018 World Cup (Colombia vs Japan) - Mordovia Arena
@@ -24,6 +25,8 @@ if __name__ == '__main__' :
             [0,   43.16 ]      # Bottom Left
         ],dtype=float
     )
+    pts_src *= quality
+    #print(pts_src)
 
     # Get four corners of the goal area
     print('Click on the four corners of the goal area and then press [ENTER]')
@@ -45,11 +48,11 @@ if __name__ == '__main__' :
     #print(ball_rw)
     
     # Draw circle
-    overlay_rw = np.zeros((68, 105, 3), np.uint8)
-    cv2.circle(overlay_rw, tuple(ball_rw.astype(int)), int(9.15), (0,0,255), 1, lineType=cv2.LINE_AA)
-    cv2.imshow("Overlay Real-world", overlay_rw)
-    overlay_img = cv2.warpPerspective(overlay_rw, h, (im_dst.shape[1],im_dst.shape[0]))
-    cv2.imshow("Overlay Warped", overlay_img)
+    overlay_rw = np.zeros((68*quality, 105*quality, 3), np.uint8)
+    cv2.circle(overlay_rw, tuple(ball_rw.astype(int)), int(9.15*quality), (0,0,255), 1*quality, lineType=cv2.LINE_AA)
+    #cv2.imshow("Overlay Real-world", overlay_rw)
+    overlay_img = cv2.warpPerspective(overlay_rw, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LANCZOS4)
+    #cv2.imshow("Overlay Warped", overlay_img)
     cv2.add(overlay_img, im_dst, im_dst)
 
     # Display image.
