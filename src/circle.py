@@ -40,7 +40,7 @@ if __name__ == '__main__' :
     #print(h)
 
     # Get ball point (field image)
-    print('Click on the offside player and then press [ENTER]')
+    print('Click on the ball and then press [ENTER]')
     ball_im = utils.get_points(im_dst, 1)[0]
     #print(ball_im)
 
