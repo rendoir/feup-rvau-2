@@ -33,7 +33,7 @@ def get_points(im, max_points) :
 def blend_overlay_with_field(src_img,overlay,transparency):
     hsv = cv2.cvtColor(src_img, code=cv2.COLOR_BGR2HSV)
     # green range
-    lower_green = np.array([30, 65, 65])
+    lower_green = np.array([35, 60, 60])
     upper_green = np.array([65, 255, 255])
     # layer masks
     field_mask = cv2.inRange(hsv, lower_green, upper_green)
@@ -43,7 +43,7 @@ def blend_overlay_with_field(src_img,overlay,transparency):
     field_layer = cv2.bitwise_and(src_img, src_img, mask=field_mask)
     player_layer = cv2.bitwise_and(src_img, src_img, mask=player_mask)
     # creates line that is blank where the players are
-    overlay_layer = cv2.bitwise_and(field_layer,overlay)
+    overlay_layer = cv2.bitwise_and(overlay,overlay,mask=field_mask)
     overlay_layer = cv2.GaussianBlur(overlay_layer,(3,3),cv2.BORDER_DEFAULT)
     field_layer = cv2.addWeighted(field_layer,1,overlay_layer,transparency,0)
     final = field_layer + player_layer

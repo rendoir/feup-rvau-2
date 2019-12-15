@@ -61,13 +61,16 @@ if __name__ == '__main__' :
     #cv2.imshow("Overlay Warped", overlay_img)
 
     # Draw text
+    height, width, channels = im_dst.shape
+    overlay_text = np.zeros((height,width,3), np.uint8)
     distance = np.linalg.norm(ball_rw - middle_of_goal_line) / quality
-    text_location = (int(overlay_img.shape[1] * 0.1), int(overlay_img.shape[0] * 0.8))
-    cv2.putText(overlay_img, "%.2f" % distance + 'm', text_location, cv2.FONT_HERSHEY_DUPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+    text_location = (int(overlay_text.shape[1] * 0.1), int(overlay_text.shape[0] * 0.8))
+    cv2.putText(overlay_text, "%.2f" % distance + 'm', text_location, cv2.FONT_HERSHEY_DUPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
     
     # Merge overlay
-    cv2.add(overlay_img, im_dst, im_dst)
+    final = utils.blend_overlay_with_field(im_dst,overlay_img,0.5)
+    cv2.add(overlay_text, final, final)
 
     # Display image.
-    cv2.imshow("Image", im_dst)
+    cv2.imshow("Image", final)
     cv2.waitKey(0)

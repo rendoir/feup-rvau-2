@@ -66,7 +66,7 @@ if __name__ == '__main__' :
     overlay_img = blank_image
     cv2.line(overlay_img, tuple(line_point_1_im.astype(int)), tuple(line_point_2_im.astype(int)), (0,0,255), 5, cv2.LINE_AA)
 
-    final = utils.blend_overlay_with_field(clean_img,overlay_img,1.0)
+    final = utils.blend_overlay_with_field(clean_img,overlay_img,0.5)
 
     # Display image.
     cv2.imshow("Image", final)
