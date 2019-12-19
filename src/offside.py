@@ -9,6 +9,7 @@ import utils
 
 if __name__ == '__main__' :
 
+    #automatic_homography = False
 
     # Read destination image
     # 2008 UEFA Cup Final (Zenit Saint Petersburg vs Rangers) - Manchester City Stadium
