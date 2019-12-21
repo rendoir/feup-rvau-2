@@ -9,7 +9,9 @@ import utils
 if __name__ == '__main__':
     img = cv2.imread('../img/football1.jpg')
     field = utils.GetFieldLayer(img)
-    edges = cv2.Canny(field, 100, 200,True)
+    cv2.imshow("Field Layer",field)
+    field = cv2.GaussianBlur(field, (3, 3), cv2.BORDER_DEFAULT)
+    edges = cv2.Canny(field, 100, 300)
     lines = cv2.HoughLines(edges, 1, np.pi / 180, 150, None, 0, 0)
 
     if lines is not None:

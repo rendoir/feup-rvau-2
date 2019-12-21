@@ -52,7 +52,7 @@ def blend_overlay_with_field(src_img,overlay,transparency):
 def GetFieldLayer(src_img):
     hsv = cv2.cvtColor(src_img, code=cv2.COLOR_BGR2HSV)
     # green range
-    lower_green = np.array([35, 60, 60])
+    lower_green = np.array([35, 10, 60])
     upper_green = np.array([65, 255, 255])
     # layer masks
     field_mask = cv2.inRange(hsv, lower_green, upper_green)
