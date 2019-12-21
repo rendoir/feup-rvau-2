@@ -48,3 +48,16 @@ def blend_overlay_with_field(src_img,overlay,transparency):
     field_layer = cv2.addWeighted(field_layer,1,overlay_layer,transparency,0)
     final = field_layer + player_layer
     return final
+
+def GetFieldLayer(src_img):
+    hsv = cv2.cvtColor(src_img, code=cv2.COLOR_BGR2HSV)
+    # green range
+    lower_green = np.array([35, 60, 60])
+    upper_green = np.array([65, 255, 255])
+    # layer masks
+    field_mask = cv2.inRange(hsv, lower_green, upper_green)
+    player_mask = cv2.bitwise_not(field_mask)
+    # player_mask = cv2.morphologyEx(player_mask, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5)))
+    # extract layers from original image
+    field_layer = cv2.bitwise_and(src_img, src_img, mask=field_mask)
+    return field_layer
