@@ -12,7 +12,7 @@ if __name__ == '__main__':
     cv2.imshow("Field Layer",field)
     field = cv2.GaussianBlur(field, (3, 3), cv2.BORDER_DEFAULT)
     edges = cv2.Canny(field, 100, 300)
-    lines = cv2.HoughLines(edges, 1, np.pi / 180, 150, None, 0, 0)
+    lines = cv2.HoughLines(edges, 1, math.radians(1.7), 150, None, 0, 0)
 
     if lines is not None:
         for i in range(0, len(lines)):
