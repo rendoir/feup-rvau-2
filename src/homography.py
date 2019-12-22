@@ -1,11 +1,7 @@
 import cv2
-import numpy as np
-import sys
-import utils
-from matplotlib import pyplot as plt
 import math
 import utils
-
+import numpy as np
 
 class Line:
     def __init__(self, pt1, pt2):
@@ -44,6 +40,7 @@ if __name__ == '__main__':
             pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * (a)))
             lns.append(Line(pt1, pt2))
 
+    # Calculate intersection points
     intersections = []
     for i in range(0, len(lns)):
         for j in range(i + 1, len(lns)):
@@ -51,6 +48,29 @@ if __name__ == '__main__':
             intersections.append(point)
         cv2.line(img, lns[i].pt1, lns[i].pt2, (0, 0, 255), 1)
 
+
+    # Cleanup similar points and points outside of the image
+    i = 0
+    while i < len(intersections):
+
+        # Check if outside of image
+        xi,yi = intersections[i]
+        sy,sx,_ = img.shape
+        if xi < 0 or yi < 0 or xi > sx or yi > sy:
+            del intersections[i]
+            continue
+
+        # Check if similar 
+        j = i+1
+        while j < len(intersections):
+            distance = np.linalg.norm(list(x-y for x,y in zip(intersections[i],intersections[j])))
+            if distance < 20:
+                del intersections[j]
+                continue
+            j += 1
+        i += 1
+
+    # Draw points
     for point in intersections:
         cv2.circle(img, point, 10, (0, 255, 0))
 
