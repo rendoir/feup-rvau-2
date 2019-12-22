@@ -2,6 +2,7 @@ import cv2
 import math
 import utils
 import numpy as np
+from itertools import permutations
 
 class Line:
     def __init__(self, pt1, pt2):
@@ -73,6 +74,57 @@ if __name__ == '__main__':
     # Draw points
     for point in intersections:
         cv2.circle(img, point, 10, (0, 255, 0))
+
+
+    # Homography
+    if len(intersections) < 4:
+        raise Exception('Not enough points were detected for a homography')
+    
+    # Loop through all the possible permutations of 4 points in the image
+    FOUND = False
+    all_img_pts = [np.array(i, dtype=float) for i in intersections]
+    for img_pts in permutations(intersections, 4):
+        if FOUND:
+            break
+        # Loop through all the possible permutations of 4 points in the reference
+        for ref_points in permutations(utils.reference_points, 4):
+            if FOUND:
+                break
+            # Convert to np.ndarray of np.ndarray of float64
+            img_pts = [np.array(i, dtype=float) for i in img_pts]
+            img_pts = np.array(img_pts)
+            ref_points = np.array(ref_points)
+            
+            # Calculate homography
+            h, status = cv2.findHomography(img_pts, ref_points)
+
+            # Check if at least one other image point matches one other reference point
+            for test_img_pt in all_img_pts:
+                if FOUND:
+                    break
+                if not test_img_pt in img_pts:
+                    for test_ref_pt in utils.reference_points:
+                        if FOUND:
+                            break
+                        if not list(test_ref_pt) in ref_points.tolist():
+                            # Apply homography to reference test point
+                            test_img_in_ref = cv2.perspectiveTransform(test_img_pt.reshape(1, 1, -1), h)[0][0]
+                            # Check if it matches the image test point with an error of at most 2m
+                            distance = np.linalg.norm(test_img_in_ref - test_ref_pt)
+                            if distance < 2:
+                                FOUND = True
+                                print(test_ref_pt)
+                                print(ref_points)
+                                print(test_img_pt)
+                                print(img_pts)
+                                print(test_img_in_ref)
+                                print(distance)
+                                print('-------------------------------------')
+                                h_inv = np.linalg.inv(h)
+                                test_img_in_ref = cv2.perspectiveTransform(test_ref_pt.reshape(1, 1, -1), h_inv)[0][0]
+                                print(test_img_in_ref)
+                                
+                            
 
     # cv2.imshow("Canny Result", edges)
     cv2.imshow("Canny -> Houghlines", img)
