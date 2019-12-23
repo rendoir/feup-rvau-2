@@ -65,10 +65,44 @@ def findBestHomography():
                                 print(test_img_in_ref)
                                 print(distance)
                                 print('-------------------------------------')
-                                #return h
+                                applyHomographyLine(img, h, h_inv)
+                                return
+
+
+def applyHomographyLine(img, h, h_inv):
+    # Get offside player point (field image)
+    print('Click on the offside player and then press [ENTER]')
+    player_im = utils.get_points(img, 1)[0]
+    #print(player_im)
+
+    # Get corresponding offside player point in real world
+    player_rw = cv2.perspectiveTransform(player_im.reshape(1, 1, -1), h)[0][0]
+    #print(player_rw)
+
+    # Get the two line points in the real world line (same x, y is the field bounds)
+    line_point_1_rw = player_rw.copy()
+    line_point_1_rw[1] = 0
+    line_point_2_rw = player_rw.copy()
+    line_point_2_rw[1] = 67
+    #print(line_point_1_rw)
+    #print(line_point_2_rw)
+
+    # Get corresponding second point in the image
+    line_point_1_im = cv2.perspectiveTransform(line_point_1_rw.reshape(1, 1, -1), h_inv)[0][0]
+    line_point_2_im = cv2.perspectiveTransform(line_point_2_rw.reshape(1, 1, -1), h_inv)[0][0]
+    #print(line_point_1_im)
+    #print(line_point_2_im)
+
+    # Draw line
+    cv2.line(img, tuple(line_point_1_im.astype(int)), tuple(line_point_2_im.astype(int)), (180,50,255), 5, cv2.LINE_AA)
+
+    cv2.imshow("Image", img)
+    cv2.waitKey(0)
 
 
 if __name__ == '__main__':
+    debug = True
+
     img = cv2.imread('../img/football1.jpg')
     field = utils.GetFieldLayer(img)
     # cv2.imshow("Field Layer", field)
@@ -96,7 +130,8 @@ if __name__ == '__main__':
         for j in range(i + 1, len(lns)):
             point = lns[i].intersection(lns[j])
             intersections.append(point)
-        cv2.line(img, lns[i].pt1, lns[i].pt2, (0, 0, 255), 1)
+        if debug:
+            cv2.line(img, lns[i].pt1, lns[i].pt2, (0, 0, 255), 1)
 
 
     # Cleanup similar points and points outside of the image
@@ -121,16 +156,12 @@ if __name__ == '__main__':
         i += 1
 
     # Draw points
-    for point in intersections:
-        cv2.circle(img, point, 10, (0, 255, 0))
-
+    if debug:
+        for point in intersections:
+            cv2.circle(img, point, 10, (0, 255, 0))
 
     # Homography
     if len(intersections) < 4:
         raise Exception('Not enough points were detected for a homography')
 
     findBestHomography()                  
-                        
-    # cv2.imshow("Canny Result", edges)
-    cv2.imshow("Canny -> Houghlines", img)
-    cv2.waitKey(0)
