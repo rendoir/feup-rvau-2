@@ -28,7 +28,7 @@ def findBestHomography():
             continue
 
         # Loop through all the possible permutations of 4 points in the reference
-        for ref_points in permutations(utils.reference_points, 4):
+        for ref_points in permutations(utils.reference_points_right, 4):
             # Optimization: check if polygon is convex and clockwise
             if not utils.isConvex(img_pts) or not utils.isClockwise(img_pts):
                 continue
@@ -51,7 +51,7 @@ def findBestHomography():
             # Check if at least one other image point matches one other reference point
             for test_img_pt in all_img_pts:
                 if not test_img_pt in img_pts:
-                    for test_ref_pt in utils.reference_points:
+                    for test_ref_pt in utils.reference_points_right:
                         if not list(test_ref_pt) in ref_points.tolist():
                             # Apply homography to reference test point
                             test_img_in_ref = cv2.perspectiveTransform(test_img_pt.reshape(1, 1, -1), h)[0][0]

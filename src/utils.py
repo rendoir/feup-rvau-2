@@ -133,26 +133,11 @@ def isClockwise(pts):
 
 
 # 105x68 Field, origin on the left upper corner, clock-wise order
-reference_points = np.array([
-    # Outer points
-    #[0, 0], [52.5, 0], [105, 0],
-    #[105, 68], [52.5, 68], [0, 68],
-
-    # Left penalty area
-    #[0, 13.84], [16.5, 13.84],
-    #[16.5, 54.16], [0, 54.16],
-
-    # Left goal area
-    #[0, 24.84], [5.5, 24.84],
-    #[5.5, 43.16], [0, 43.16],
-
+reference_points_right = np.array([
     # Right penalty area
     [88.5, 13.84], [105, 13.84],
     [105, 54.16], [88.5, 54.16],
 
-    # Right goal area
-    #[99.5, 24.84], [105, 24.84],
-    #[105, 43.16], [99.5, 43.16],
-
+    # Right upper corner 
     [105, 0]
 ], dtype=float)
