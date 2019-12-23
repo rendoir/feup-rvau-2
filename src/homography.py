@@ -24,13 +24,13 @@ def findBestHomography():
     all_img_pts = [np.array(i, dtype=float) for i in intersections]
     for img_pts in permutations(intersections, 4):
         # Optimization: check if polygon is convex and clockwise
-        if not math.isConvex(img_pts) or not math.isClockwise(img_pts):
+        if not utils.isConvex(img_pts) or not utils.isClockwise(img_pts):
             continue
 
         # Loop through all the possible permutations of 4 points in the reference
         for ref_points in permutations(utils.reference_points, 4):
             # Optimization: check if polygon is convex and clockwise
-            if not math.isConvex(img_pts) or not math.isClockwise(img_pts):
+            if not utils.isConvex(img_pts) or not utils.isClockwise(img_pts):
                 continue
 
             # Convert to np.ndarray of np.ndarray of float64
