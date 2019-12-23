@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import math
 
 def mouse_handler(event, x, y, flags, data) :
 
@@ -63,6 +64,74 @@ def GetFieldLayer(src_img):
     return field_layer
 
 
+TWO_PI = 2 * math.pi
+# Credits to Rory Daulton
+def isConvex(polygon):
+    """Return True if the polynomial defined by the sequence of 2D
+    points is 'strictly convex': points are valid, side lengths non-
+    zero, interior angles are strictly between zero and a straight
+    angle, and the polygon does not intersect itself.
+
+    NOTES:  1.  Algorithm: the signed changes of the direction angles
+                from one side to the next side must be all positive or
+                all negative, and their sum must equal plus-or-minus
+                one full turn (2 pi radians). Also check for too few,
+                invalid, or repeated points.
+            2.  No check is explicitly done for zero internal angles
+                (180 degree direction-change angle) as this is covered
+                in other ways, including the `n < 3` check.
+    """
+    try:  # needed for any bad points or direction changes
+        # Check for too few points
+        if len(polygon) < 3:
+            return False
+        # Get starting information
+        old_x, old_y = polygon[-2]
+        new_x, new_y = polygon[-1]
+        new_direction = math.atan2(new_y - old_y, new_x - old_x)
+        angle_sum = 0.0
+        # Check each point (the side ending there, its angle) and accum. angles
+        for ndx, newpoint in enumerate(polygon):
+            # Update point coordinates and side directions, check side length
+            old_x, old_y, old_direction = new_x, new_y, new_direction
+            new_x, new_y = newpoint
+            new_direction = math.atan2(new_y - old_y, new_x - old_x)
+            if old_x == new_x and old_y == new_y:
+                return False  # repeated consecutive points
+            # Calculate & check the normalized direction-change angle
+            angle = new_direction - old_direction
+            if angle <= -math.pi:
+                angle += TWO_PI  # make it in half-open interval (-Pi, Pi]
+            elif angle > math.pi:
+                angle -= TWO_PI
+            if ndx == 0:  # if first time through loop, initialize orientation
+                if angle == 0.0:
+                    return False
+                orientation = 1.0 if angle > 0.0 else -1.0
+            else:  # if other time through loop, check orientation is stable
+                if orientation * angle <= 0.0:  # not both pos. or both neg.
+                    return False
+            # Accumulate the direction-change angle
+            angle_sum += angle
+        # Check that the total number of full turns is plus-or-minus 1
+        return abs(round(angle_sum / TWO_PI)) == 1
+    except (ArithmeticError, TypeError, ValueError):
+        return False  # any exception means not a proper convex polygon
+
+def signedArea(pts):
+    xs,ys = map(list, zip(*pts))
+    xs.append(xs[0])
+    ys.append(ys[0])
+    area = 0
+    for i in range(len(xs) - 1):
+        edge = (xs[i+1] - xs[i]) * (ys[i+1] + ys[i])
+        area += edge
+    return area
+
+def isClockwise(pts):
+    return signedArea(pts) > 0
+
+
 # 105x68 Field, origin on the left upper corner, clock-wise order
 reference_points = np.array([
     # Outer points
@@ -74,7 +143,7 @@ reference_points = np.array([
     #[16.5, 54.16], [0, 54.16],
 
     # Left goal area
-    #[0, 24,84], [5.5, 24,84],
+    #[0, 24.84], [5.5, 24.84],
     #[5.5, 43.16], [0, 43.16],
 
     # Right penalty area
@@ -82,8 +151,8 @@ reference_points = np.array([
     [105, 54.16], [88.5, 54.16],
 
     # Right goal area
-    #[99.5, 24,84], [105, 24,84],
-    #[105, 43.16], [99.5, 43.16],
+    [99.5, 24.84], [105, 24.84],
+    [105, 43.16], [99.5, 43.16],
 
-    [105, 0],
+    [105, 0]
 ], dtype=float)
