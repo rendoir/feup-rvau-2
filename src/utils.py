@@ -45,7 +45,7 @@ def blend_overlay_with_field(src_img,overlay,transparency):
     player_layer = cv2.bitwise_and(src_img, src_img, mask=player_mask)
     # creates line that is blank where the players are
     overlay_layer = cv2.bitwise_and(overlay,overlay,mask=field_mask)
-    overlay_layer = cv2.GaussianBlur(overlay_layer,(3,3),cv2.BORDER_DEFAULT)
+    #overlay_layer = cv2.GaussianBlur(overlay_layer,(3,3),cv2.BORDER_DEFAULT)
     field_layer = cv2.addWeighted(field_layer,1,overlay_layer,transparency,0)
     final = field_layer + player_layer
     return final

@@ -94,7 +94,10 @@ def applyHomographyLine(img, h, h_inv):
     #print(line_point_2_im)
 
     # Draw line
-    cv2.line(img, tuple(line_point_1_im.astype(int)), tuple(line_point_2_im.astype(int)), (180,50,255), 5, cv2.LINE_AA)
+    height, width, channels = img.shape
+    blank_image = np.zeros((height,width,3), np.uint8)
+    cv2.line(blank_image, tuple(line_point_1_im.astype(int)), tuple(line_point_2_im.astype(int)), (180,50,255), 5, cv2.LINE_AA)
+    img = utils.blend_overlay_with_field(img,blank_image,0.5)
 
     cv2.imshow("Image", img)
     cv2.waitKey(0)
