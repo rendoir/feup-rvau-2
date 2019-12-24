@@ -119,7 +119,8 @@ if __name__ == '__main__':
     for i in range(0, len(lns)):
         for j in range(i + 1, len(lns)):
             point = lns[i].intersection(lns[j])
-            intersections.append(point)
+            if not point is None:
+                intersections.append(point)
         if debug:
             cv2.line(img, lns[i].pt1, lns[i].pt2, (0, 0, 255), 1)
 

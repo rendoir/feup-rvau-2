@@ -13,6 +13,8 @@ class Line:
         self.b = pt1[1] - self.m * pt1[0]
 
     def intersection(self, other):
+        if (self.m - other.m) == 0:
+            return None
         x = (other.b - self.b) / (self.m - other.m)
         y = self.m * x + self.b
         return (int(x), int(y))
