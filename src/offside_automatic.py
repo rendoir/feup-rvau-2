@@ -4,19 +4,6 @@ import utils
 import numpy as np
 from itertools import permutations
 
-class Line:
-    def __init__(self, pt1, pt2):
-        self.pt1 = pt1
-        self.pt2 = pt2
-        self.dx = pt2[0] - pt1[0]
-        self.dy = pt2[1] - pt1[1]
-        self.m = self.dy / self.dx
-        self.b = pt1[1] - self.m * pt1[0]
-
-    def intersection(self, other):
-        x = (other.b - self.b) / (self.m - other.m)
-        y = self.m * x + self.b
-        return (int(x), int(y))
 
 
 def findBestHomography():
@@ -125,7 +112,7 @@ if __name__ == '__main__':
             y0 = b * rho
             pt1 = (int(x0 + 1000 * (-b)), int(y0 + 1000 * (a)))
             pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * (a)))
-            lns.append(Line(pt1, pt2))
+            lns.append(utils.Line(pt1, pt2))
 
     # Calculate intersection points
     intersections = []

@@ -2,6 +2,22 @@ import cv2
 import numpy as np
 import math
 
+
+class Line:
+    def __init__(self, pt1, pt2):
+        self.pt1 = pt1
+        self.pt2 = pt2
+        self.dx = pt2[0] - pt1[0]
+        self.dy = pt2[1] - pt1[1]
+        self.m = self.dy / self.dx
+        self.b = pt1[1] - self.m * pt1[0]
+
+    def intersection(self, other):
+        x = (other.b - self.b) / (self.m - other.m)
+        y = self.m * x + self.b
+        return (int(x), int(y))
+
+
 def mouse_handler(event, x, y, flags, data) :
 
     if event == cv2.EVENT_LBUTTONDOWN :
@@ -140,4 +156,13 @@ reference_points_right = np.array([
 
     # Right upper corner 
     [105, 0]
+], dtype=float)
+
+reference_points_left = np.array([
+    # Left goal area
+    [0, 24.84], [5.5, 24.84],
+    [5.5, 43.16], [0, 43.16],
+
+    # Left upper corner 
+    [0, 0]
 ], dtype=float)
