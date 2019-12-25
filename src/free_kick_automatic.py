@@ -52,45 +52,64 @@ def findBestHomography():
                                 print(test_img_in_ref)
                                 print(distance)
                                 print('-------------------------------------')
-                                applyHomographyLine(img, h, h_inv)
+                                applyHomographyLine(img, img_pts, ref_points)
                                 return
 
 
-def applyHomographyLine(img, h, h_inv):
-    # Get offside player point (field image)
-    print('Click on the offside player and then press [ENTER]')
-    player_im = utils.get_points(img, 1)[0]
-    #print(player_im)
+def applyHomographyLine(img, img_pts, ref_points):
+    ref_points *= quality
+    utils.middle_goal_line_right *= quality
 
-    # Get corresponding offside player point in real world
-    player_rw = cv2.perspectiveTransform(player_im.reshape(1, 1, -1), h)[0][0]
-    #print(player_rw)
+    # Calculate Homography between source and destination points
+    h, status = cv2.findHomography(ref_points, img_pts)
+    h_inv = np.linalg.inv(h)
+    #print(h)
 
-    # Get the two line points in the real world line (same x, y is the field bounds)
-    line_point_1_rw = player_rw.copy()
-    line_point_1_rw[1] = 0
-    line_point_2_rw = player_rw.copy()
-    line_point_2_rw[1] = 67
-    #print(line_point_1_rw)
-    #print(line_point_2_rw)
+    # Get ball point (field image)
+    print('Click on the ball and then press [ENTER]')
+    ball_im = utils.get_points(img, 1)[0]
+    #print(ball_im)
 
-    # Get corresponding second point in the image
-    line_point_1_im = cv2.perspectiveTransform(line_point_1_rw.reshape(1, 1, -1), h_inv)[0][0]
-    line_point_2_im = cv2.perspectiveTransform(line_point_2_rw.reshape(1, 1, -1), h_inv)[0][0]
-    #print(line_point_1_im)
-    #print(line_point_2_im)
-
+    # Get corresponding ball point in real world
+    ball_rw = cv2.perspectiveTransform(ball_im.reshape(1, 1, -1), h_inv)[0][0]
+    #print(ball_rw)
+    
+    # Draw circle
+    overlay_rw = np.zeros((68*quality, 105*quality, 3), np.uint8)
+    if draw_circle:
+        cv2.circle(overlay_rw, tuple(ball_rw.astype(int)), int(9.15*quality), (0,0,255), 1*quality, lineType=cv2.LINE_AA)
+        #cv2.imshow("Overlay Real-world", overlay_rw)
+    
     # Draw line
-    height, width, channels = img.shape
-    blank_image = np.zeros((height,width,3), np.uint8)
-    cv2.line(blank_image, tuple(line_point_1_im.astype(int)), tuple(line_point_2_im.astype(int)), (0,0,255), 5, cv2.LINE_AA)
-    img = utils.blend_overlay_with_field(img,blank_image,0.5)
+    if draw_line:
+        cv2.line(overlay_rw, tuple(ball_rw.astype(int)), tuple(utils.middle_goal_line_right.astype(int)), (128,128,128), 1*quality, cv2.LINE_AA)
 
-    cv2.imshow("Image", img)
+    # Warp overlay
+    overlay_img = cv2.warpPerspective(overlay_rw, h, (img.shape[1],img.shape[0]), cv2.INTER_LANCZOS4)
+    #cv2.imshow("Overlay Warped", overlay_img)
+
+    # Draw text
+    height, width, channels = img.shape
+    overlay_text = np.zeros((height,width,3), np.uint8)
+    if draw_text:
+        distance = np.linalg.norm(ball_rw - utils.middle_goal_line_right) / quality
+        text_location = (int(overlay_text.shape[1] * 0.1), int(overlay_text.shape[0] * 0.8))
+        cv2.putText(overlay_text, "%.2f" % distance + 'm', text_location, cv2.FONT_HERSHEY_DUPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
+    
+    # Merge overlay
+    final = utils.blend_overlay_with_field(img,overlay_img,0.5)
+    cv2.add(overlay_text, final, final)
+
+    # Display image.
+    cv2.imshow("Image", final)
     cv2.waitKey(0)
 
 
 if __name__ == '__main__':
+    quality = 100
+    draw_circle = True
+    draw_line = True
+    draw_text = True
     debug = True
 
     img = cv2.imread('../img/football1.jpg')

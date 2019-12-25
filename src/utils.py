@@ -13,6 +13,8 @@ class Line:
         self.b = pt1[1] - self.m * pt1[0]
 
     def intersection(self, other):
+        if (self.m - other.m) == 0:
+            return None
         x = (other.b - self.b) / (self.m - other.m)
         y = self.m * x + self.b
         return (int(x), int(y))
@@ -158,11 +160,4 @@ reference_points_right = np.array([
     [105, 0]
 ], dtype=float)
 
-reference_points_left = np.array([
-    # Left goal area
-    [0, 24.84], [5.5, 24.84],
-    [5.5, 43.16], [0, 43.16],
-
-    # Left upper corner 
-    [0, 0]
-], dtype=float)
+middle_goal_line_right = np.array([105, 34], dtype=float)
