@@ -9,11 +9,15 @@ class Line:
         self.pt2 = pt2
         self.dx = pt2[0] - pt1[0]
         self.dy = pt2[1] - pt1[1]
-        self.m = self.dy / self.dx
+        if self.dx == 0:
+            self.m = math.inf
+        else:
+            self.m = self.dy / self.dx
         self.b = pt1[1] - self.m * pt1[0]
+        print(pt1, pt2)
 
     def intersection(self, other):
-        if (self.m - other.m) == 0:
+        if math.isinf(self.m) or math.isinf(other.m) or (self.m - other.m) == 0:
             return None
         x = (other.b - self.b) / (self.m - other.m)
         y = self.m * x + self.b
