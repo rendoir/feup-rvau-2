@@ -14,7 +14,6 @@ class Line:
         else:
             self.m = self.dy / self.dx
         self.b = pt1[1] - self.m * pt1[0]
-        print(pt1, pt2)
 
     def intersection(self, other):
         if math.isinf(self.m) or math.isinf(other.m) or (self.m - other.m) == 0:
